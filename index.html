@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        pre {
+            border: 1px dashed #666;
+            padding: 10px;
+            white-space: pre-wrap;
+        }
+
+        arrow {
+            font-size: 30px;
+            color: red;
+        }
+
+        red {
+            color: red;
+        }
+
+        [\$for] {
+            color: blue;
+        }
+
+        body {
+            display: grid;
+            gap: 20px;
+            grid-template-rows: 60px 1fr;
+            grid-template-columns: 50% 50%;
+        }
+
+        h1 {
+            grid-column: span 2;
+        }
+    </style>
+    <script>
+        function fn() {
+            alert(1)
+        }
+    </script>
+</head>
+
+<body>
+    <h1>Template.js</h1>
+    <div class="left">
+        <pre>&lt;template id="template" rule="v-"&gt;
+    &lt;h2 class="${title}"&gt;<red>${title}</red>&lt;/h2&gt;
+    &lt;h3 <red>v-if="showh3"</red>&gt;h3:${title}&lt;/h3&gt;
+    &lt;h4 v-if="showh4"&gt;h4:${title}&lt;/h4&gt;
+    &lt;ul class="list"&gt;
+        &lt;li class="item" v-for="list"&gt;
+            ${index &gt; 2 ? `&lt;i style="color: red;"&gt;b&lt;/i&gt;`:'a'} - ${ item.message }&lt;span&gt;${parseInt(item.num)}&lt;/span&gt;
+            &lt;div&gt;&lt;i <red>v-for="item.tag"</red>&gt;${item}  &lt;/i&gt;&lt;/div&gt;
+            &lt;button disabled="${item.disabled}"&gt;查看&lt;/button&gt;
+        &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;ul class="demo"&gt;
+        &lt;li <red>v-for="(value,name,index) of object"</red>&gt;
+            ${ index  } - ${ name  } : ${ value  }
+        &lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;div v-for="[1,2,3,4,5].reverse()"&gt;${item}&lt;/div&gt;
+    乘法表
+    &lt;div v-for="i in [1,2,3,4,5,6,7,8,9]"&gt;
+        &lt;span v-for="j in [1,2,3,4,5,6,7,8,9]" v-if="i&gt;=j"&gt; ${i*j} &lt;/span&gt;
+    &lt;/div&gt;
+&lt;/template&gt;
+</pre>
+
+        <arrow>+</arrow>
+
+        <pre>const data = {
+        title: 'Title',
+        showh3: true,
+        showh4: false,
+        object: {
+            title: 'How to do lists in Vue',
+            author: 'Jane Doe',
+            publishedAt: '2016-04-10'
+        },
+        list: [
+            {
+                message: '特朗普拒与拜登分享总统每日简报荐',
+                num: '482万',
+                tag: ['A', 'B', 'C'],
+                disabled: true
+            },
+            {
+                message: '最高法指令再审"百香果女孩"案新',
+                num: '465万',
+                tag: ['A', 'B'],
+                disabled: false
+            },
+            {
+                message: '拜登称特朗普拒认败选很尴尬沸',
+                num: '449万',
+                tag: ['A', 'B'],
+                disabled: false
+            },
+            {
+                message: '天津一无症状感染者转为确诊病例',
+                num: '433万',
+                tag: ['A', 'B'],
+                disabled: true
+            },
+            {
+                message: '度小店 11.11好物新知节热',
+                num: '403万',
+                tag: ['A', 'B'],
+                disabled: true
+            },
+        ]
+    }
+}
+</pre>
+
+
+
+        <pre>document.body.appendChild(<red>template.render(data).content</red>)</pre>
+    </div>
+
+
+    <div class="right" id="demo"></div>
+
+    <template id="template" rule="v-">
+
+        <h2 class="${title}">${title}</h2>
+        <h3 v-if="showh3">h3:${title}</h3>
+        <h3 hidden="${showh3}">h3:${title}</h3>
+        <h4 v-if="showh4">h4:${title}</h4>
+        <h4 hidden="${showh4}">hidden:h4:${title}</h4>
+        <ul class="list">
+            <li class="item" v-for="(item,index) in list">
+                ${index > 2 ? `<i style="color: red;">b</i>`:'a'} - ${ item.message }<span>${parseInt(item.num)}</span>
+                <div><i v-for="el in item.tag">${index+1}.${el} </i></div>
+                <button disabled="${item.disabled}">查看</button>
+            </li>
+        </ul>
+        <ul class="demo">
+            <li v-for="(value,name,index) of object">
+                ${ index } - ${ name } : ${ value }
+            </li>
+        </ul>
+        <div v-for="[1,2,3,4,5].reverse()">${item}</div>
+        乘法表
+        <div v-for="i in [1,2,3,4,5,6,7,8,9]">
+            <span v-for="j in [1,2,3,4,5,6,7,8,9]" v-if="i>=j"> ${i*j} </span>
+        </div>
+    </template>
+    
+
+
+
+
+    <script src="./web-template.js"></script>
+
+    <script>
+
+
+
+
+
+        var res = {
+            code: 0,
+            data: {
+                title: 'Title',
+                showh3: true,
+                showh4: false,
+                object: {
+                    title: 'How to do lists in Vue',
+                    author: 'Jane Doe',
+                    publishedAt: '2016-04-10'
+                },
+                list: [
+                    {
+                        message: '特朗普拒与拜登分享总统每日简报荐',
+                        num: '482万',
+                        tag: ['A', 'B', 'C'],
+                        disabled: true
+                    },
+                    {
+                        message: '最高法指令再审"百香果女孩"案新',
+                        num: '465万',
+                        tag: ['A', 'B'],
+                        disabled: false
+                    },
+                    {
+                        message: '拜登称特朗普拒认败选很尴尬沸',
+                        num: '449万',
+                        tag: ['A', 'B'],
+                        disabled: false
+                    },
+                    {
+                        message: '天津一无症状感染者转为确诊病例',
+                        num: '433万',
+                        tag: ['A', 'B'],
+                        disabled: true
+                    },
+                    {
+                        message: '度小店 11.11好物新知节热',
+                        num: '403万',
+                        tag: ['A', 'B'],
+                        disabled: true
+                    },
+                ]
+            }
+        }
+
+
+        var res2 = {
+            code: 0,
+            data: {
+                title: 'Title222',
+                showh3: true,
+                showh4: false,
+                list: [
+                    {
+                        message: '222特朗普拒与拜登分享总统每日简报荐',
+                        num: '482万',
+                        tag: ['A', 'B', 'C']
+                    },
+                    {
+                        message: '22最高法指令再审"百香果女孩"案新',
+                        num: '465万',
+                        tag: ['A', 'B']
+                    },
+                    {
+                        message: '拜登称特朗普拒认败选很尴尬沸',
+                        num: '449万',
+                        tag: ['A', 'B']
+                    },
+                    {
+                        message: '天津一无症状感染者转为确诊病例',
+                        num: '433万',
+                        tag: ['A', 'B']
+                    },
+                    {
+                        message: '度小店 11.11好物新知节热',
+                        num: '403万',
+                        tag: ['A', 'B']
+                    },
+                ]
+            }
+        }
+
+        console.time('render')
+
+        demo.appendChild(template.render(res.data).content)
+        console.timeEnd('render')
+
+    </script>
+
+
+</body>
+
+</html>
