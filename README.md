@@ -8,6 +8,8 @@ web-template.js 是一款基于 ES6 模板字符串解析的模板引擎。
 1. 类 vue 模板语法，上手快，几乎可以不用看文档
 1. 代码量极少，包含注释不到 100 行，方便学习和扩展
 
+[demo](https://xboxyan.codelabo.cn/web-template/index.html)
+
 ## 适用场景
 
 适用于原生开发，又希望有一定模板渲染的场景，比如一大堆列表循环渲染
@@ -156,7 +158,7 @@ const data = {
 <span data-type="normal">Message: hello</span>
 ```
 
-一些特殊的表单属性，比如 `disabled`、`hidden`、`required`、`checked`、`selected`，如果设置值为 `false` ，那么将会移除该属性
+一些特殊的表单属性，比如 `disabled`、`hidden`、`required`、`checked`、`selected`、`open`（欢迎补充~），如果设置值为 `false` ，那么将会移除该属性
 
 ```html
 <button disabled="${disabled}">button</button>

@@ -66,7 +66,7 @@
         this.fragment.innerHTML = this.$fragment.innerHTML.interpolate(data);
 
         // props
-        const propsMap = ['disabled','hidden','checked','selected','required'];
+        const propsMap = ['disabled','hidden','checked','selected','required','open'];
         const propsEls = Array.from(this.fragment.content.querySelectorAll(`[${propsMap.join('],[')}]`));
         propsEls.forEach(el => {
             propsMap.forEach(props => {
