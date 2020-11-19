@@ -1,6 +1,6 @@
 # web-template
 
-web-template.js 是一款基于 ES6 模板字符串解析的模板引擎。
+web-template.js 是一款基于 [ES6 模板字符串](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/template_strings)解析的模板引擎。
 
 ## 特点
 
@@ -9,6 +9,13 @@ web-template.js 是一款基于 ES6 模板字符串解析的模板引擎。
 1. 代码量极少，包含注释不到 100 行，方便学习和扩展
 
 [demo](https://xboxyan.codelabo.cn/web-template/index.html)
+
+## 更新
+
+* 2020-11-19
+  * 支持 `{{}}` 插值表达式
+  * 新增 `fragment` 标签
+  * 新增 `open` 布尔值属性
 
 ## 适用场景
 
@@ -44,7 +51,7 @@ let html = `${data.map(function (obj, index) {
 console.log(html);
 ```
 
-使用 template.js 之后
+使用 web-template.js 之后
 
 ```html
 <template id="template" rule="v-">
@@ -123,6 +130,8 @@ list.appendChild(template.render(data).content)
 
 数据绑定采用的是 ES6 模板字符串的语法， `${ }`：
 
+*目前已兼容 `{{ }}` 的语法*
+
 ```html
 <span>Message: ${ msg }</span>
 ```
@@ -158,7 +167,7 @@ const data = {
 <span data-type="normal">Message: hello</span>
 ```
 
-一些特殊的表单属性，比如 `disabled`、`hidden`、`required`、`checked`、`selected`、`open`（欢迎补充~），如果设置值为 `false` ，那么将会移除该属性
+一些为布尔值的属性，比如 `disabled`、`hidden`、`required`、`checked`、`selected`、`readonly`,`open`（欢迎补充~），如果设置值为 `false` ，那么将会移除该属性
 
 ```html
 <button disabled="${disabled}">button</button>
@@ -258,7 +267,7 @@ function add(m,n){
 
 目前有两个指令，分别是**条件渲染**和**列表渲染**
 
-#### 条件渲染
+#### 3.1.条件渲染
 
 `v-if` 用来条件性地渲染一块内容，当值为 false 时，内容会被完全移除
 
@@ -304,7 +313,7 @@ const data = {
 
 > 注意，这里是普通的属性，所以需要包裹 `${ }`
 
-#### 列表渲染
+#### 3.2.列表渲染
 
 ##### 别名
 
@@ -442,6 +451,36 @@ const data = {
 ```
 
 > 虽然有些鸡肋，某些情况下还是有点作用的
+
+##### fragment 片段
+
+有时候我们可能需要遍历这样一种没有父级的元素
+
+```html
+<dl>
+  <dt></dt>  
+  <dd></dd>
+  <dt></dt>  
+  <dd></dd> 
+  <dt></dt>  
+  <dd></dd> 
+<dl>
+```
+
+这时可以借助 fragment 标签包裹，渲染后 fragment 标签会被移除
+
+```html
+<template>
+  <dl>
+    <fragment v-for="[1,2,3]">
+      <dt></dt>
+      <dd></dd>
+    </fragment>
+  </dl>
+</template>
+```
+
+返回如上
 
 ##### 对象迭代
 

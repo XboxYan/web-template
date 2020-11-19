@@ -31,7 +31,8 @@
     String.prototype.interpolate = function (params) {
         const names = Object.keys(params);
         const vals = Object.values(params);
-        return new Function(...names, `return \`${escape2Html(this)}\`;`)(...vals);
+        const str = this.replace(/\{\{([^\}]+)\}\}/g,(all,s)=>`\${${s}}`); // {{ }}  =>  ${ }
+        return new Function(...names, `return \`${escape2Html(str)}\`;`)(...vals);
     };
 
     // 模板引擎
@@ -47,9 +48,15 @@
             repeatEls.forEach(el => {
                 const strFor = el.getAttribute(`${rule}for`);
                 const {isArrray,items,params} = parseFor(strFor);
-                el.removeAttribute(`${rule}for`);
                 el.before('${Object.entries(' + items + ').map(function(['+`${(isArrray?'$index$':(params[1]||'name'))},${params[0]||(isArrray?'item':'value')}],${params[2]||'index'}`+'){ return `');
-                el.after('`}).join("")}');
+                if (el.tagName === 'FRAGMENT'){
+                    // 如果是 fragment 标签
+                    el.after(el.innerHTML + '`}).join("")}');
+                    el.parentNode.removeChild(el);
+                } else {
+                    el.removeAttribute(`${rule}for`);
+                    el.after('`}).join("")}');
+                }
             })
 
             // $if 条件渲染
