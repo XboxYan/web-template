@@ -8,10 +8,13 @@ web-template.js 是一款基于 [ES6 模板字符串](https://developer.mozilla.
 1. 类 vue 模板语法，上手快，几乎可以不用看文档
 1. 代码量极少，包含注释不到 100 行，方便学习和扩展
 
-[demo](https://xboxyan.codelabo.cn/web-template/index.html)
+[演示 demo](https://xboxyan.codelabo.cn/web-template/index.html)
 
 ## 更新
 
+* 2020-11-20
+  * 新增 `mount` 方法
+  * 新增 `block` 标签
 * 2020-11-19
   * 支持 `{{}}` 插值表达式
   * 新增 `fragment` 标签
@@ -452,34 +455,6 @@ const data = {
 
 > 虽然有些鸡肋，某些情况下还是有点作用的
 
-##### fragment 片段
-
-有时候我们可能需要遍历这样一种没有父级的元素
-
-```html
-<dl>
-  <dt></dt>  
-  <dd></dd>
-  <dt></dt>  
-  <dd></dd> 
-  <dt></dt>  
-  <dd></dd> 
-<dl>
-```
-
-这时可以借助 fragment 标签包裹，渲染后 fragment 标签会被移除
-
-```html
-<template>
-  <dl>
-    <fragment v-for="[1,2,3]">
-      <dt></dt>
-      <dd></dd>
-    </fragment>
-  </dl>
-</template>
-```
-
 返回如上
 
 ##### 对象迭代
@@ -532,6 +507,64 @@ const data = {
 
 > 对象迭代不支持简写，尽量多使用数组遍历吧
 
+#### 3.3 fragment 片段
+
+有时候我们可能需要遍历这样一种没有父级的元素
+
+```html
+<dl>
+  <dt></dt>  
+  <dd></dd>
+  <dt></dt>  
+  <dd></dd> 
+  <dt></dt>  
+  <dd></dd> 
+<dl>
+```
+
+这时可以借助 fragment 标签包裹，渲染后 fragment 标签会被移除
+
+```html
+<template>
+  <dl>
+    <fragment v-for="[1,2,3]">
+      <dt></dt>
+      <dd></dd>
+    </fragment>
+  </dl>
+</template>
+```
+
+在 `v-if` 中也适用的
+
+```html
+<template>
+  <dl>
+    <fragment v-if="true">
+      <dt>1 dt</dt>
+      <dd>1 dd</dd>
+    </fragment>
+    <fragment v-if="false">
+      <dt>2 dt</dt>
+      <dd>2 dd</dd>
+    </fragment>
+  </dl>
+</template>
+```
+
+返回
+
+```html
+<dl>
+  <dt>1 dt</dt>
+  <dd>1 dd</dd>
+</dl>
+```
+
+其他任意地方也可以添加，只不过不会被渲染
+
+> 也可使用 block 标签，功能完全一致 （参考微信小程序）
+
 ### 4.渲染
 
 在原生 `template` 标签扩展了 `render` 方法，可以传入一个对象，然后返回一个 `template`文档片段（[`document-fragment`](https://developer.mozilla.org/zh-CN/docs/Web/API/DocumentFragment)）
@@ -555,6 +588,40 @@ container.appendChild(tpl.content);
 container.innerHTML = tpl.innerHTML;
 ```
 
+### 5. 挂载
+
+一般情况通过 `template.render(data)` 来获取到模板的内容，然后再通过容器的 `.innerHTML` 就可以了，但是有些啰嗦，这里提供一个更为简单的方法 `template.mount()`
+
+需要在容器上指定和模板 id 相同的值，形成映射关系，比如
+
+```html
+<div is="tpl"></div>
+
+<template id="tpl">
+  <span class="name">${name}</span>
+</template>
+```
+
+然后执行
+
+```js
+tpl.mount(data);
+```
+
+这样模板内容就自动挂载在页面上了
+
+`mount` 还支持第二个参数，回调函数
+
+有些情况下需要获取模板内容的元素，可以放在该函数内
+
+```js
+tpl.mount(data,function(con){
+  // con 为容器
+  const el = con.querySelector('.name')
+});
+```
+
+> 一般情况下均可满足，不满足的情况可以采用 render 方式，更加灵活
 
 ## 兼容性和一些局限
 
