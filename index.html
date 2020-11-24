@@ -35,6 +35,16 @@
         h1 {
             grid-column: span 2;
         }
+
+        .ball{
+            width: 50px;
+            height: 50px;
+            background-color:cornflowerblue;
+            transition: .3s;
+        }
+        .ball[data-active=true]{
+            transform: translateX(200px);
+        }
     </style>
     <script>
         function fn() {
@@ -119,55 +129,41 @@
 
 
 
-        <pre>document.body.appendChild(<red>template.render(data).content</red>)</pre>
+        <pre><red>template.mount(res.data)</red></pre>
     </div>
 
 
     <div class="right">
+        <button id="toggle">切换数据源</button>
         <div is="template"></div>
-
     </div>
 
     <template id="template" rule="@">
 
-        <h2 class="${title}">${title}</h2>
-        <h3 @if="showh3">h3:${title}</h3>
-        <h3 hidden="${showh3}">h3:${title}</h3>
-        <h4 @if="showh4">h4:${title}</h4>
-        <h4 hidden="${showh4}">hidden:h4:${title}</h4>
-        <ul class="list">
-            <li class="item" @for="(item,index) in list">
-                ${index > 2 ? `<i style="color: red;">b</i>`:'a'} - ${ item.message }<span>${parseInt(item.num)}</span>
-                <div><i @for="el in item.tag">${index+1}.${el} </i></div>
-                <button disabled="${item.disabled}">查看</button>
-            </li>
-        </ul>
-        <ul class="demo">
-            <li @for="(value,name,index) of object">
-                ${ index } - ${ name } : ${ value }
-            </li>
-        </ul>
-        <div @for="[1,2,3,4,5].reverse()">{{item}}</div>
-        乘法表
-        <div @for="i in [1,2,3,4,5,6,7,8,9]">
-            <span @for="j in [1,2,3,4,5,6,7,8,9]" @if="i>=j"> ${i*j} </span>
-        </div>
+            <h2 class="${title}" data-title="${title}">${title}</h2>
+            <h3 @if="showh3">h3:${title}</h3>
+            <h3 hidden="${showh3}">h3:${title}</h3>
+            <h4 @if="showh4">h4:${title}</h4>
+            <h4 hidden="${showh4}">hidden:h4:${title}</h4>
+            <div class="ball" data-active="${!showh3}"></div>
+            <ul class="list">
+                <li class="item" @for="(item,index) in list">
+                    ${index > 2 ? `<i style="color: red;">b</i>`:'a'} - ${ item.message }<span>${parseInt(item.num)}</span>
+                    <div><i @for="el in item.tag">${index+1}.${el} </i></div>
+                    <button disabled="${item.disabled}">查看</button>
+                </li>
+            </ul>
+            <ul class="demo">
+                <li @for="(value,name,index) of object">
+                    ${ index } - ${ name } : ${ value }
+                </li>
+            </ul>
+            <div @for="[1,2,3,4,5].reverse()">{{item}}</div>
+            乘法表
+            <div @for="i in [1,2,3,4,5,6,7,8,9]">
+                <span @for="j in [1,2,3,4,5,6,7,8,9]" @if="i>=j"> ${i*j} </span>
+            </div>
 
-        <fragment @for="[1,2,3]">
-            <span>${index}</span>
-            <p>${item}</p>
-        </fragment>
-
-        <dl>
-            <fragment @if="true">
-              <dt>1 dt</dt>
-              <dd>1 dd</dd>
-            </fragment>
-            <fragment>
-              <dt>2 dt</dt>
-              <dd>2 dd</dd>
-            </fragment>
-          </dl>
     </template>
     
     <script src="./web-template.js"></script>
@@ -200,26 +196,14 @@
                         message: '最高法指令再审"百香果女孩"案新',
                         num: '465万',
                         tag: ['A', 'B'],
-                        disabled: false
+                        disabled: true
                     },
                     {
                         message: '拜登称特朗普拒认败选很尴尬沸',
                         num: '449万',
                         tag: ['A', 'B'],
-                        disabled: false
-                    },
-                    {
-                        message: '天津一无症状感染者转为确诊病例',
-                        num: '433万',
-                        tag: ['A', 'B'],
                         disabled: true
-                    },
-                    {
-                        message: '度小店 11.11好物新知节热',
-                        num: '403万',
-                        tag: ['A', 'B'],
-                        disabled: true
-                    },
+                    }
                 ]
             }
         }
@@ -228,34 +212,32 @@
         var res2 = {
             code: 0,
             data: {
-                title: 'Title222',
-                showh3: true,
+                title: '22Title',
+                showh3: false,
                 showh4: false,
+                object: {
+                    title: 'How to do lists in Vue',
+                    author: 'Jane Doe',
+                    publishedAt: '2016-04-10'
+                },
                 list: [
-                    {
-                        message: '222特朗普拒与拜登分享总统每日简报荐',
-                        num: '482万',
-                        tag: ['A', 'B', 'C']
-                    },
-                    {
-                        message: '22最高法指令再审"百香果女孩"案新',
-                        num: '465万',
-                        tag: ['A', 'B']
-                    },
-                    {
-                        message: '拜登称特朗普拒认败选很尴尬沸',
-                        num: '449万',
-                        tag: ['A', 'B']
-                    },
                     {
                         message: '天津一无症状感染者转为确诊病例',
                         num: '433万',
-                        tag: ['A', 'B']
+                        tag: ['A', 'B', 'C'],
+                        disabled: false
                     },
                     {
                         message: '度小店 11.11好物新知节热',
                         num: '403万',
-                        tag: ['A', 'B']
+                        tag: ['A'],
+                        disabled: false
+                    },
+                    {
+                        message: 'new 度小店 11.11好物新知节热',
+                        num: '14403万',
+                        tag: ['A', 'B'],
+                        disabled: false
                     },
                 ]
             }
@@ -265,8 +247,16 @@
 
         template.mount(res.data)
         
-        
         console.timeEnd('render')
+
+        toggle.onclick = function(){
+            if(this.flag){
+                template.mount(res.data)
+            }else{
+                template.mount(res2.data)
+            }
+            this.flag = !this.flag;
+        }
 
     </script>
 

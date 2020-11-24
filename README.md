@@ -6,12 +6,15 @@ web-template.js 是一款基于 [ES6 模板字符串](https://developer.mozilla.
 
 1. 纯原生浏览器解析，无任何依赖，无需编译，不拖泥带水
 1. 类 vue 模板语法，上手快，几乎可以不用看文档
-1. 代码量极少，包含注释不到 100 行，方便学习和扩展
+1. 支持 dom-diff 局部更新，性能高效
+1. 代码量极少，包含注释不到 200 行，方便学习和扩展
 
 [演示 demo](https://xboxyan.codelabo.cn/web-template/index.html)
 
 ## 更新
 
+* 2020-11-24
+  * 支持 `dom-diff` 局部更新
 * 2020-11-20
   * 新增 `mount` 方法
   * 新增 `block` 标签
@@ -22,7 +25,7 @@ web-template.js 是一款基于 [ES6 模板字符串](https://developer.mozilla.
 
 ## 适用场景
 
-适用于原生开发，又希望有一定模板渲染的场景，比如一大堆列表循环渲染
+适用于原生开发，又希望有一定模板渲染能力的场景，比如一大堆列表循环渲染
 
 在使用之前
 
@@ -588,9 +591,20 @@ container.appendChild(tpl.content);
 container.innerHTML = tpl.innerHTML;
 ```
 
+如果需要局部更新，可使用 `.html()` 方法
+
+```js
+// 支持dom节点
+container.html(tpl.content);
+// 字符串也支持
+container.html(tpl.innerHTML);
+```
+
 ### 5. 挂载
 
 一般情况通过 `template.render(data)` 来获取到模板的内容，然后再通过容器的 `.innerHTML` 就可以了，但是有些啰嗦，这里提供一个更为简单的方法 `template.mount()`
+
+> 该方式目前支持 dom-diff 局部更新特性
 
 需要在容器上指定和模板 id 相同的值，形成映射关系，比如
 
@@ -610,22 +624,13 @@ tpl.mount(data);
 
 这样模板内容就自动挂载在页面上了
 
-`mount` 还支持第二个参数，回调函数
-
-有些情况下需要获取模板内容的元素，可以放在该函数内
-
-```js
-tpl.mount(data,function(con){
-  // con 为容器
-  const el = con.querySelector('.name')
-});
-```
-
 > 一般情况下均可满足，不满足的情况可以采用 render 方式，更加灵活
 
 ## 兼容性和一些局限
 
 需要支持 ES6 模板字符串语法的浏览器，还在用 IE 的小伙伴可以放弃了
+
+dom-diff 基本够用，还有待完善
 
 由于使用了很多 DOM API，依赖浏览器环境，因此不支持 Node 等其他非浏览器环境，不支持服务端渲染
 
