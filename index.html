@@ -134,7 +134,8 @@
 
 
     <div class="right">
-        <button id="toggle">切换数据源（diff）</button>
+        <button id="toggle">切换数据源</button>
+        <input type="checkbox" id="diff"><label for="diff">是否开启 dom-diff</label>
         <div is="template"></div>
     </div>
 
@@ -252,9 +253,9 @@
         toggle.onclick = function(){
             console.time('render')
             if(this.flag){
-                template.mount(res.data, true)
+                template.mount(res.data, diff.checked)
             }else{
-                template.mount(res2.data, true)
+                template.mount(res2.data, diff.checked)
             }
             console.timeEnd('render')
             this.flag = !this.flag;
