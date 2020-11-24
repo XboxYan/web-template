@@ -604,8 +604,6 @@ container.html(tpl.innerHTML);
 
 一般情况通过 `template.render(data)` 来获取到模板的内容，然后再通过容器的 `.innerHTML` 就可以了，但是有些啰嗦，这里提供一个更为简单的方法 `template.mount()`
 
-> 该方式目前支持 dom-diff 局部更新特性
-
 需要在容器上指定和模板 id 相同的值，形成映射关系，比如
 
 ```html
@@ -625,6 +623,14 @@ tpl.mount(data);
 这样模板内容就自动挂载在页面上了
 
 > 一般情况下均可满足，不满足的情况可以采用 render 方式，更加灵活
+
+如果需要局部更新，可以传入第2个参数，表示是否进行 diff 比较
+
+```js
+tpl.mount(data, isDiff);
+```
+
+> 一般情况下，diff 并不会比直接 innerHTML 要快，但是可以保留元素的状态，可以自行选择
 
 ## 兼容性和一些局限
 

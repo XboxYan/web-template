@@ -29,14 +29,14 @@
         oldAttrs.forEach(attr=>{
             const newAttr = newNode.getAttributeNode(attr.name) || { name:attr.name, value: null } ;
             if ( attr.value!== newAttr.value ){
-                patch.push(newAttr)
+                patch.push(newAttr);
             }
         })
 
         // 旧节点没有新节点的属性
         newAttrs.forEach(attr=>{
             if (!oldAttrs.find(el=>el.name == attr.name)) {
-                patch.push(attr)
+                patch.push(attr);
             }
         })
         return patch;
@@ -220,12 +220,16 @@
     }
 
     // 模板引擎 mount
-    HTMLTemplateElement.prototype.mount = function (data) {
+    HTMLTemplateElement.prototype.mount = function (data,isDiff) {
         if (!this.container) {
             this.container = document.querySelector(`[is="${this.id}"]`);
         }
         if (this.container) {
-            this.container.html(this.render(data).content);
+            if (isDiff) {
+                this.container.html(this.render(data).content);
+            } else {
+                this.container.innerHTML = this.render(data).innerHTML
+            }
         } else {
             throw new Error('没有找到属性 is 为 ' + this.id + ' 的容器')
         }

@@ -134,7 +134,7 @@
 
 
     <div class="right">
-        <button id="toggle">切换数据源</button>
+        <button id="toggle">切换数据源（diff）</button>
         <div is="template"></div>
     </div>
 
@@ -250,11 +250,13 @@
         console.timeEnd('render')
 
         toggle.onclick = function(){
+            console.time('render')
             if(this.flag){
-                template.mount(res.data)
+                template.mount(res.data, true)
             }else{
-                template.mount(res2.data)
+                template.mount(res2.data, true)
             }
+            console.timeEnd('render')
             this.flag = !this.flag;
         }
 
