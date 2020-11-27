@@ -70,7 +70,8 @@
 
             patches.push({
                 type: 'SORT',
-                newNode: oldkey,
+                newNode: oldkey.map( el => el.ownerElement),
+                el: oldNode,
             })
 
             newkey.forEach((keynode,idx) => {
@@ -175,8 +176,7 @@
                     item.el.appendChild(item.newNode);
                     break;
                 case 'SORT':
-                    const [node,...nodes] = item.newNode.map(el => el.ownerElement);
-                    node.after(...nodes);
+                    item.el.append(...item.newNode);
                     break;
                 default:
                     break;
