@@ -45,6 +45,12 @@
         .ball[data-active=true]{
             transform: translateX(200px);
         }
+
+        @keyframes slide {
+            to {
+                background-color: darksalmon;
+            }
+        }
     </style>
     <script>
         function fn() {
@@ -61,9 +67,12 @@
     &lt;h3 <red>@if="showh3"</red>&gt;h3:${title}&lt;/h3&gt;
     &lt;h4 @if="showh4"&gt;h4:${title}&lt;/h4&gt;
     &lt;ul class="list"&gt;
-        &lt;li class="item" @for="list"&gt;
-            ${index &gt; 2 ? `&lt;i style="color: red;"&gt;b&lt;/i&gt;`:'a'} - ${ item.message }&lt;span&gt;${parseInt(item.num)}&lt;/span&gt;
-            &lt;div&gt;&lt;i <red>@for="item.tag"</red>&gt;${item}  &lt;/i&gt;&lt;/div&gt;
+        &lt;li class="item" @for="list" <red>key="${item.id}"</red>&gt;
+            &lt;input type="checkbox" &gt;
+            &lt;strong&gt;[key = ${item.id}]&lt;/strong&gt;
+            ${ item.message }&lt;span&gt;${parseInt(item.num)}&lt;/span&gt;
+            &lt;div&gt;&lt;i @for="el in item.tag"&gt;${index+1}.${el} &lt;/i&gt;&lt;/div&gt;
+            &lt;input&gt;
             &lt;button disabled="${item.disabled}"&gt;查看&lt;/button&gt;
         &lt;/li&gt;
     &lt;/ul&gt;
@@ -93,35 +102,26 @@
         },
         list: [
             {
+                id: "1",
                 message: '特朗普拒与拜登分享总统每日简报荐',
                 num: '482万',
                 tag: ['A', 'B', 'C'],
                 disabled: true
             },
             {
+                id: "2",
                 message: '最高法指令再审"百香果女孩"案新',
                 num: '465万',
                 tag: ['A', 'B'],
-                disabled: false
+                disabled: true
             },
             {
+                id: "3",
                 message: '拜登称特朗普拒认败选很尴尬沸',
                 num: '449万',
                 tag: ['A', 'B'],
-                disabled: false
-            },
-            {
-                message: '天津一无症状感染者转为确诊病例',
-                num: '433万',
-                tag: ['A', 'B'],
                 disabled: true
-            },
-            {
-                message: '度小店 11.11好物新知节热',
-                num: '403万',
-                tag: ['A', 'B'],
-                disabled: true
-            },
+            }
         ]
     }
 }
@@ -148,9 +148,12 @@
             <h4 hidden="${showh4}">hidden:h4:${title}</h4>
             <div class="ball" data-active="${!showh3}"></div>
             <ul class="list">
-                <li class="item" @for="(item,index) in list">
-                    ${index > 2 ? `<i style="color: red;">b</i>`:'a'} - ${ item.message }<span>${parseInt(item.num)}</span>
+                <li class="item" @for="(item,index) in list" key="${item.id}">
+                    <input type="checkbox" >
+                    <strong>[key = ${item.id}]</strong>
+                    ${ item.message }<span>${parseInt(item.num)}</span>
                     <div><i @for="el in item.tag">${index+1}.${el} </i></div>
+                    <input>
                     <button disabled="${item.disabled}">查看</button>
                 </li>
             </ul>
@@ -188,18 +191,21 @@
                 },
                 list: [
                     {
+                        id: "1",
                         message: '特朗普拒与拜登分享总统每日简报荐',
                         num: '482万',
                         tag: ['A', 'B', 'C'],
                         disabled: true
                     },
                     {
+                        id: "2",
                         message: '最高法指令再审"百香果女孩"案新',
                         num: '465万',
                         tag: ['A', 'B'],
                         disabled: true
                     },
                     {
+                        id: "3",
                         message: '拜登称特朗普拒认败选很尴尬沸',
                         num: '449万',
                         tag: ['A', 'B'],
@@ -223,32 +229,42 @@
                 },
                 list: [
                     {
+                        id: "2",
                         message: '天津一无症状感染者转为确诊病例',
                         num: '433万',
-                        tag: ['A', 'B', 'C'],
+                        tag: ['A', 'C'],
                         disabled: false
                     },
                     {
+                        id: "4",
                         message: '度小店 11.11好物新知节热',
                         num: '403万',
                         tag: ['A'],
                         disabled: false
                     },
                     {
+                        id: "1",
                         message: 'new 度小店 11.11好物新知节热',
                         num: '14403万',
                         tag: ['A', 'B'],
                         disabled: false
                     },
+                    {
+                        id: "5",
+                        message: 'new 度小店 11.11好物新知节热',
+                        num: '14403万',
+                        tag: ['A'],
+                        disabled: true
+                    },
                 ]
             }
         }
 
-        console.time('render')
+        console.time('init')
 
         template.mount(res.data)
         
-        console.timeEnd('render')
+        console.timeEnd('init')
 
         toggle.onclick = function(){
             console.time('render')

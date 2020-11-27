@@ -7,12 +7,14 @@ web-template.js 是一款基于 [ES6 模板字符串](https://developer.mozilla.
 1. 纯原生浏览器解析，无任何依赖，无需编译，不拖泥带水
 1. 类 vue 模板语法，上手快，几乎可以不用看文档
 1. 支持 dom-diff 局部更新，性能高效
-1. 代码量极少，包含注释不到 200 行，方便学习和扩展
+1. 代码量极少，~~包含注释不到 100 行~~（由于添加了 dom-diff 特性，已经超过 100 行了~），方便学习和扩展
 
 [演示 demo](https://xboxyan.codelabo.cn/web-template/index.html)
 
 ## 更新
 
+* 2020-11-27
+  * 列表渲染支持 `key` 属性
 * 2020-11-24
   * 支持 `dom-diff` 局部更新
 * 2020-11-20
@@ -460,6 +462,20 @@ const data = {
 
 返回如上
 
+##### 使用 key 属性
+
+如果列表有可能会发生顺序改变，可以指定一个不重复的 key ，这样在渲染时会优先根据 key 的顺序重新排序，而不会重新渲染。
+
+```html
+<template>
+  <li v-for="items" key="${item.id}">
+    ${ index } - ${ item.message }
+  </li>
+</template>
+```
+
+> 目前仅适用于循环渲染
+
 ##### 对象迭代
 
 你也可以用 `v-for` 来遍历一个对象，这里用 `of` 来区分，形如 `value of object`
@@ -630,7 +646,7 @@ tpl.mount(data);
 tpl.mount(data, isDiff);
 ```
 
-> 一般情况下，diff 并不会比直接 innerHTML 要快，但是可以保留元素的状态，可以自行选择
+> 一般情况下，diff 并不会比直接 innerHTML 要快，但是可以保留元素的状态，建议初次渲染选择 innerHTML，后面更新使用 dom-diff
 
 ## 兼容性和一些局限
 

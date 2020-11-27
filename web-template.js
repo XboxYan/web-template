@@ -7,17 +7,11 @@
 (function () {
 
     // 布尔属性
-    const propsMap = ['disabled', 'hidden', 'checked', 'selected', 'required', 'open'];
+    const propsMap = ['disabled', 'hidden', 'checked', 'selected', 'required', 'open', 'readonly'];
 
     // html2Node '<div></div>' =>  <div></div>
     function html2Node(html) {
-        if (html.nodeType) {
-            return html;
-        } else {
-            const tpl = document.createElement('TEMPLATE');
-            tpl.innerHTML = html;
-            return tpl.content;
-        }
+        return html.nodeType ? html : document.createRange().createContextualFragment(html);
     }
 
     // 比较属性
@@ -26,16 +20,15 @@
         const oldAttrs = Array.from(oldNode.attributes);
         const newAttrs = Array.from(newNode.attributes);
         //  判断新的属性和新的属性的关系
-        oldAttrs.forEach(attr=>{
-            const newAttr = newNode.getAttributeNode(attr.name) || { name:attr.name, value: null } ;
-            if ( attr.value!== newAttr.value ){
+        oldAttrs.forEach(attr => {
+            const newAttr = newNode.getAttributeNode(attr.name) || { name: attr.name, value: null };
+            if (attr.value !== newAttr.value) {
                 patch.push(newAttr);
             }
         })
-
         // 旧节点没有新节点的属性
-        newAttrs.forEach(attr=>{
-            if (!oldAttrs.find(el=>el.name == attr.name)) {
+        newAttrs.forEach(attr => {
+            if (!oldAttrs.find(el => el.name == attr.name)) {
                 patch.push(attr);
             }
         })
@@ -43,43 +36,90 @@
     }
 
     // 比较子节点
-    function diffNodes(oldChildren, newChildren, patches, oldNode) {
-        // 比较旧的每一项
-        oldChildren.forEach((child, idx) => {
-            // 如果不相等
-            if( !child.isEqualNode(newChildren[idx]) ){
-                walk(child, newChildren[idx], patches)
-            }
-        });
+    function diffNodes(oldNodes, newNodes, patches, oldNode) {
 
-        // 新增的节点
-        newChildren.forEach((child, idx)=>{
-            if (!oldChildren[idx]) {
-                patches.push({
-                    type : 'ADD',
-                    newNode : child,
-                    el : oldNode,
-                })
-            }
-        })
+        const oldChildren = Array.from(oldNodes);
+        const newChildren = Array.from(newNodes);
+
+        const oldkey = oldChildren.map(el => el.nodeType === Node.ELEMENT_NODE?el.getAttributeNode('key'):null).filter(Boolean);
+        const newkey = newChildren.map(el => el.nodeType === Node.ELEMENT_NODE?el.getAttributeNode('key'):null).filter(Boolean);
+
+        // 有 key 的情况，仅限于 for 循环
+        if (oldkey.length > 0) {
+            oldkey.forEach((keynode, idx) => {
+                // 如果新节点没有旧节点的key，就移除旧节点
+                if(!newkey.find(el => el.value === keynode.value)){
+                    oldkey.splice(idx,1);
+                    patches.push({
+                        type: 'REMOVE',
+                        el: keynode.ownerElement,
+                    })
+                }
+            });
+            newkey.forEach(keynode => {
+                // 如果旧节点没有新节点的key，就新增节点
+                if(!oldkey.find(el => el.value === keynode.value)){
+                    oldkey.push(keynode);
+                }
+            });
+
+            const sort = newkey.map( el => el.value);
+
+            // 根据新的顺序排序
+            oldkey.sort((a,b) => sort.indexOf(a.value) - sort.indexOf(b.value));
+
+            patches.push({
+                type: 'SORT',
+                newNode: oldkey,
+            })
+
+            newkey.forEach((keynode,idx) => {
+                // 如果不相等
+                const newNode = keynode.ownerElement;
+                const oldNode = oldkey[idx].ownerElement;
+                if (!oldNode.isEqualNode(newNode)) {
+                    walk(oldNode, newNode, patches);
+                }
+            });
+
+        } else {
+            // 比较旧的每一项
+            oldChildren.forEach((child, idx) => {
+                // 如果不相等
+                if (!child.isEqualNode(newChildren[idx])) {
+                    walk(child, newChildren[idx], patches);
+                }
+    
+            });
+            // 新增的节点
+            newChildren.forEach((child, idx) => {
+                if (!oldChildren[idx]) {
+                    patches.push({
+                        type: 'ADD',
+                        newNode: child,
+                        el: oldNode,
+                    })
+                }
+            })
+        }
     }
 
     // 比较差异
     function walk(oldNode, newNode, patches) {
         const currentPatch = {};
         if (!newNode) {
-            //  没有新节点就删除
+            // 没有新节点就删除
             currentPatch.type = 'REMOVE';
             currentPatch.el = oldNode;
         } else if (oldNode.nodeType === Node.TEXT_NODE && newNode.nodeType === Node.TEXT_NODE) {
             // 判断是文本节点
-            if (oldNode.textContent.replace(/\s/g,'') !== newNode.textContent.replace(/\s/g,'')) {
+            if (oldNode.textContent.replace(/\s/g, '') !== newNode.textContent.replace(/\s/g, '')) {
                 currentPatch.type = 'TEXT';
                 currentPatch.el = oldNode;
                 currentPatch.text = newNode.textContent;
             }
         } else if (oldNode.nodeType === newNode.nodeType && newNode.nodeType === Node.ELEMENT_NODE) {
-            //  比较属性
+            // 比较属性
             const attrs = diffAttr(oldNode, newNode);
             if (attrs.length > 0) {
                 currentPatch.type = 'ATTRS';
@@ -87,7 +127,7 @@
                 currentPatch.attrs = attrs;
             }
             //  遍历子节点
-            diffNodes( oldNode.childNodes, newNode.childNodes, patches, oldNode);
+            diffNodes(oldNode.childNodes, newNode.childNodes, patches, oldNode);
         } else {
             //  节点被替换
             currentPatch.type = 'REPLACE';
@@ -100,7 +140,7 @@
     }
 
     // diff
-    function diff(container,html){
+    function diff(container, html) {
         const patches = [];
         const newNode = html2Node(html);
         diffNodes(container.childNodes, newNode.childNodes, patches, container);
@@ -108,23 +148,23 @@
     }
 
     // setDom
-    function setDom(container,html){
-        const patches = diff(container,html);
+    function setDom(container, html) {
+        const patches = diff(container, html);
         console.log(patches)
         patches.forEach(item => {
             switch (item.type) {
                 case 'REMOVE':
-                    item.el.parentNode.removeChild(item.el);
+                    item.el.remove();
                     break;
                 case 'TEXT':
                     item.el.textContent = item.text;
                     break;
                 case 'ATTRS':
                     item.attrs.forEach(attr => {
-                        if ( (propsMap.includes(attr.name) && attr.value === 'false') || !attr.value) {
+                        if ((propsMap.includes(attr.name) && attr.value === 'false') || !attr.value) {
                             item.el.removeAttribute(attr.name);
                         } else {
-                            item.el.setAttribute(attr.name,attr.value);
+                            item.el.setAttribute(attr.name, attr.value);
                         }
                     })
                     break;
@@ -133,6 +173,10 @@
                     break;
                 case 'ADD':
                     item.el.appendChild(item.newNode);
+                    break;
+                case 'SORT':
+                    const [node,...nodes] = item.newNode.map(el => el.ownerElement);
+                    node.after(...nodes);
                     break;
                 default:
                     break;
@@ -154,7 +198,7 @@
         const isObject = strFor.includes(' of ');
         const reg = /\s(?:in|of)\s/g;
         // "(item, index) in items" => ["(item, index)","items"]
-        const [keys, obj] = strFor.match(reg) ? strFor.split(/\s(?:in|of)\s/g) : ["item", strFor];
+        const [keys, obj] = strFor.match(reg) ? strFor.split(reg) : ["item", strFor];
         const items = Number(obj) > 0 ? `[${'null,'.repeat(Number(obj) - 1)}null]` : obj;
         // "(item, index)" => ["item","index"]
         const params = keys.split(/[\(|\)|,\s?]/g).filter(Boolean);
@@ -178,7 +222,7 @@
 
             // $for 循环渲染
             // <div $for="list"></div>   =>    ${ list.map(function(item,index){ return '<div></div>' }).join('') }
-            const repeatEls = Array.from(this.$fragment.content.querySelectorAll(`[\\${rule}for]`));
+            const repeatEls = this.$fragment.content.querySelectorAll(`[\\${rule}for]`);
             repeatEls.forEach(el => {
                 const strFor = el.getAttribute(`${rule}for`);
                 const { isArrray, items, params } = parseFor(strFor);
@@ -189,16 +233,16 @@
 
             // $if 条件渲染
             // <div $if="if"></div>   =>    ${ if ? '<div></div>' : '' }
-            const ifEls = Array.from(this.$fragment.content.querySelectorAll(`[\\${rule}if]`));
+            const ifEls = this.$fragment.content.querySelectorAll(`[\\${rule}if]`);
             ifEls.forEach(el => {
                 const ifs = el.getAttribute(`${rule}if`);
                 el.before('${' + ifs + '?`');
                 el.removeAttribute(`${rule}if`);
-                el.after('`:`<!--if:'+el.tagName+'-->`}');
+                el.after('`:`<!--if:' + el.tagName + '-->`}');
             })
 
             // fragment   <fragment>aa</fragment>   =>  aa
-            const fragments = Array.from(this.$fragment.content.querySelectorAll('fragment,block'));
+            const fragments = this.$fragment.content.querySelectorAll('fragment,block');
             fragments.forEach(el => {
                 el.after(el.innerHTML);
                 el.parentNode.removeChild(el);
@@ -207,12 +251,12 @@
         this.fragment.innerHTML = this.$fragment.innerHTML.interpolate(data);
 
         // props
-        const propsEls = Array.from(this.fragment.content.querySelectorAll(`[${propsMap.join('],[')}]`));
+        const propsEls = this.fragment.content.querySelectorAll(`[${propsMap.join('],[')}]`);
         propsEls.forEach(el => {
             propsMap.forEach(props => {
                 // 如果这些属性值是 false ，就直接移除
                 if (el.getAttribute(props) === 'false') {
-                    el.removeAttribute(props)
+                    el.removeAttribute(props);
                 }
             })
         })
@@ -220,7 +264,7 @@
     }
 
     // 模板引擎 mount
-    HTMLTemplateElement.prototype.mount = function (data,isDiff) {
+    HTMLTemplateElement.prototype.mount = function (data, isDiff) {
         if (!this.container) {
             this.container = document.querySelector(`[is="${this.id}"]`);
         }
