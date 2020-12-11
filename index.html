@@ -146,13 +146,12 @@
             <h3 hidden="${showh3}">h3:${title}</h3>
             <h4 @if="showh4">h4:${title}</h4>
             <h4 hidden="${showh4}">hidden:h4:${title}</h4>
-            <div class="ball" data-active="${!showh3}"></div>
             <ul class="list">
-                <li class="item" @for="(item,index) in list" key="${item.id}">
-                    <input type="checkbox" >
+                <li class="item" @for="(item,index) in list" key="${item.id}" @model="list[index].disabled">
+                    <input type="checkbox">
                     <strong>[key = ${item.id}]</strong>
                     ${ item.message }<span>${parseInt(item.num)}</span>
-                    <div><i @for="el in item.tag">${index+1}.${el} </i></div>
+                    <div><i @for="(el, m) in list[index].tag">${m+list[index].tag[m]}</i></div>
                     <input>
                     <button disabled="${item.disabled}">查看</button>
                 </li>
@@ -171,6 +170,7 @@
     </template>
     
     <script src="./web-template.js"></script>
+    <script src="./web-diff.js"></script>
 
     <script>
 
@@ -199,7 +199,7 @@
                     },
                     {
                         id: "2",
-                        message: '最高法指令再审"百香果女孩"案新',
+                        message: '最高法指令再审百香果女孩案新',
                         num: '465万',
                         tag: ['A', 'B'],
                         disabled: true
@@ -263,6 +263,46 @@
         console.time('init')
 
         template.mount(res.data)
+        // template.model({
+        //     data: {
+        //         title: '默认标题',
+        //         showh3: false,
+        //         showh4: false,
+        //         object: {},
+        //         checked: false,
+        //         list: [{
+        //                 id: "1",
+        //                 message: '特朗普拒与拜登分享总统每日简报荐',
+        //                 num: '482万',
+        //                 tag: ['A', 'B', 'C'],
+        //                 disabled: true
+        //             },
+        //             {
+        //                 id: "2",
+        //                 message: '最高法指令再审"百香果女孩"案新',
+        //                 num: '465万',
+        //                 tag: ['A', 'B'],
+        //                 disabled: true
+        //             }
+        //         ]
+        //     },
+        //     methods: {
+        //         showId(item){
+        //             console.log(item)
+        //             console.log(this)
+        //             console.log(event)
+        //             // this.title = ev.target.textContent
+        //         },
+        //         change(e){
+        //             console.log(event)
+        //             this.checked = !this.checked
+        //         }
+        //     },
+        //     init(){
+        //         console.log('初始化完成')
+        //         console.log(this)
+        //     }
+        // })
         
         console.timeEnd('init')
 
