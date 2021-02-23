@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-size: 16px;
+        }
+
+        header {
+            height: 50px;
+            background: #333;
+            background: rgba(47, 47, 47, 0.98);
+        }
+
+        section {
+            margin: 0 auto;
+        }
+
+        .title {
+            float: left;
+            width: 100px;
+            line-height: 50px;
+            color: #DDD;
+            font-size: 24px;
+            cursor: pointer;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        header input {
+            width: 60%;
+            height: 24px;
+            margin-top: 12px;
+            text-indent: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.24), 0 1px 6px rgba(0, 0, 0, 0.45) inset;
+            border: none
+        }
+
+        input:focus {
+            outline-width: 0
+        }
+
+        h2 {
+            position: relative;
+        }
+
+        span {
+            position: absolute;
+            top: 2px;
+            right: 5px;
+            display: inline-block;
+            padding: 0 5px;
+            height: 20px;
+            border-radius: 20px;
+            background: #E6E6FA;
+            line-height: 22px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        ol,
+        ul {
+            padding: 0;
+            list-style: none;
+        }
+
+        li input[type="checkbox"] {
+            position: absolute;
+            top: 2px;
+            left: 10px;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        p {
+            margin: 0;
+        }
+
+        li p input {
+            top: 3px;
+            left: 40px;
+            width: 70%;
+            height: 20px;
+            line-height: 14px;
+            text-indent: 5px;
+            font-size: 14px;
+        }
+
+        li {
+            height: 32px;
+            line-height: 32px;
+            background: #fff;
+            position: relative;
+            margin-bottom: 10px;
+            padding: 0 45px;
+            border-radius: 3px;
+            border-left: 5px solid #629A9C;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+        }
+
+        ul li {
+            border-left: 5px solid #999;
+            opacity: 0.5;
+        }
+
+        li a {
+            position: absolute;
+            top: 2px;
+            right: 5px;
+            display: inline-block;
+            width: 14px;
+            height: 12px;
+            border-radius: 14px;
+            border: 6px double #FFF;
+            background: #CCC;
+            line-height: 14px;
+            text-align: center;
+            color: #FFF;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        footer {
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #666;
+            text-decoration: none;
+            color: #999;
+        }
+
+        @media screen and (max-device-width: 620px) {
+            section {
+                width: 96%;
+                padding: 0 2%;
+            }
+        }
+
+        @media screen and (min-width: 620px) {
+            section {
+                width: 600px;
+                padding: 0 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app2"></div>
+    <footer>
+        Copyright &copy; 2020 todolist.cn
+    </footer>
+    <template is="app2" rule="@">
+        <header>
+            <section>
+                <form @on="submit:addTodo">
+                    <label class="title" for="title">ToDoList</label>
+                    <input type="text" placeholder="添加ToDo" @model="todo" />
+                    <button @on="click:addTodo" class="add">添加</button>
+                </form>
+            </section>
+        </header>
+        <section>
+            <fieldset>
+                <legend>input</legend>
+                <input type="text" @model="text.m" />
+                <div>reversedMessage:${text.m}</div>
+                <div>${'现在'+now}</div>
+            </fieldset>
+            <fieldset>
+                <legend>radio</legend>
+                <label><input type="radio" name="lang" value="html" @model="lang">html</label>
+                <label><input type="radio" name="lang" value="css" @model="lang">css</label>
+                <label><input type="radio" name="lang" value="js" @model="lang">js</label>
+                <label><div>${lang}</div>
+            </fieldset>
+            <fieldset>
+                <legend>checkbox</legend>
+                <label><input type="checkbox" name="com" value="qq" @model="tim">qq</label>
+                <label><input type="checkbox" name="com" value="wechat" @model="tim">wechat</label>
+                <label><input type="checkbox" name="com" value="youku" @model="tim">youku</label>
+                <label><input type="checkbox" name="com" value="youtube" @model="tim">youtube</label>
+                <div>${tim}</div>
+            </fieldset>
+            <fieldset>
+                <legend>checkbox</legend>
+                <label><input type="checkbox" name="checked" value="yes" @model="checked">checked</label>
+                <div>${checked}</div>
+            </fieldset>
+            <fieldset>
+                <legend>select</legend>
+                <select name="browser" @model="browser">
+                    <option value="${item}" @for="browserList">${item}</option>
+                </select>
+                <div>${browser}</div>
+            </fieldset>
+            <h2>正在进行
+                <span>${todoLen}</span>
+            </h2>
+            <ol class="demo-box">
+                <li @for="todoList" key="${item.key}" @if="item.done === false">
+                    <input type="checkbox" @on="change:changeTodo(index,true)" checked="${item.done}">
+                    <p>${item.todo}</p>
+                    <a @on="click:deleteTodo(index,true)">-</a>
+                </li>
+            </ol>
+            <h2>已经完成
+                <span>${todoList.length - todoLen}</span>
+            </h2>
+            <ul>
+                <li @for="todoList" key="${item.key}" @if="item.done === true">
+                    <input type="checkbox" @on="change:changeTodo(index,false)" checked="${item.done}">
+                    <p>${item.todo}</p>
+                    <a @on="click:deleteTodo(index,false)">-</a>
+                </li>
+            </ul>
+        </section>
+    </template>
+    <script src="./web-template.js"></script>
+    <script src="./web-diff.js"></script>
+    <script src="./web-model.js"></script>
+    <script>
+        app2.model({
+            // 数据
+            data: {
+                text:{m:''},
+                todo: '',
+                todoList: [],
+                todoLen: 0,
+                lang:'html',
+                tim:['qq'],
+                checked: false,
+                browserList:['IE','Chrome','Firefox','Safari'],
+                browser:''
+            },
+            // 方法
+            methods: {
+                changeTodo(index, done) {
+                    console.log(event)
+                    if (done) {
+                        this.todoLen--
+                        this.todoList[index].done = true
+                    } else {
+                        this.todoLen++
+                        this.todoList[index].done = false
+                    }
+                },
+                deleteTodo(index, done) {
+                    if (done) {
+                        this.todoLen--
+                    }
+                    this.todoList.splice(index, 1)
+                },
+      
+                addTodo() {
+                    this.log()
+                    this.todoList.push({
+                        todo: this.todo,
+                        done: false,
+                        key: Date.now()
+                    })
+                    this.todoLen++
+                    this.todo = ''
+                    event.preventDefault();
+                },
+                log(){
+                    console.log(this,333)
+                },
+                show(){
+                    return this.lang
+                }
+            },
+            // 计算属性
+            computed:{
+                reversedMessage: function () {
+                    //return this.text.split('').reverse().join('')
+                },
+                now: function () {
+                    return 5
+                }
+            },
+            // 监听器
+            watch: {
+                lang: function(oldValue,newValue){
+                    console.log(oldValue,newValue)
+                },
+                tim: function(oldValue,newValue){
+                    console.log(oldValue,newValue)
+                }
+            },
+            // 初始化完成
+            created(){
+                console.log('init')
+                console.log(this);
+            }
+        })
+    </script>
+</body>
+
+</html>
