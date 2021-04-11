@@ -41,8 +41,8 @@
         const oldChildren = Array.from(oldNodes);
         const newChildren = Array.from(newNodes);
 
-        const oldkey = oldChildren.map(el => el.nodeType === Node.ELEMENT_NODE ? el.getAttributeNode('key') : null).filter(Boolean);
-        const newkey = newChildren.map(el => el.nodeType === Node.ELEMENT_NODE ? el.getAttributeNode('key') : null).filter(Boolean);
+        const oldkey = oldChildren.map(el => el.nodeType === Node.ELEMENT_NODE ? el.getAttributeNode('v-data-key') : null).filter(Boolean);
+        const newkey = newChildren.map(el => el.nodeType === Node.ELEMENT_NODE ? el.getAttributeNode('v-data-key') : null).filter(Boolean);
 
         // 有 key 的情况，仅限于 for 循环
         if (oldkey.length > 0) {

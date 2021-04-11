@@ -165,10 +165,10 @@
     <template is="app2" rule="@">
         <header>
             <section>
-                <form @on="submit:addTodo">
+                <form @submit="addTodo">
                     <label class="title" for="title">ToDoList</label>
                     <input type="text" placeholder="添加ToDo" @model="todo" />
-                    <button @on="click:addTodo" class="add">添加</button>
+                    <button @click="addTodo($this)" class="add">添加</button>
                 </form>
             </section>
         </header>
@@ -210,17 +210,17 @@
                 <span>${todoLen}</span>
             </h2>
             <ol class="demo-box">
-                <li @for="todoList" key="${item.key}" @if="item.done === false">
-                    <input type="checkbox" @on="{change:changeTodo(index,true),aaa:elec}" checked="${item.done}">
+                <li @for="(item,index) in todoList" :key="item.key" @if="item.done === false">
+                    <input type="checkbox" @change="changeTodo(${index},true)" checked="${item.done}">
                     <p>${item.todo}</p>
-                    <a @on="click:deleteTodo(index,true)">-</a>
+                    <a @click="deleteTodo(index,true)">-</a>
                 </li>
             </ol>
             <h2>已经完成
                 <span>${todoList.length - todoLen}</span>
             </h2>
             <ul>
-                <li @for="todoList" key="${item.key}" @if="item.done === true">
+                <li @for="todoList" :key="item.key" @if="item.done === true">
                     <input type="checkbox" @on="change:changeTodo(index,false)" checked="${item.done}">
                     <p>${item.todo}</p>
                     <a @on="click:deleteTodo(index,false)">-</a>
@@ -248,7 +248,7 @@
             // 方法
             methods: {
                 changeTodo(index, done) {
-                    console.log(event)
+                    console.log(index)
                     if (done) {
                         this.todoLen--
                         this.todoList[index].done = true
@@ -264,8 +264,8 @@
                     this.todoList.splice(index, 1)
                 },
       
-                addTodo() {
-                    this.log()
+                addTodo(a) {
+                    console.log(a)
                     this.todoList.push({
                         todo: this.todo,
                         done: false,

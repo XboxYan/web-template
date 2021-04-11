@@ -7,7 +7,7 @@
 (function () {
 
     // 事件
-    const eventList = ['click', 'dblclick', 'input', 'change', 'focus', 'blur', 'keydown', 'keyup', 'keypress', 'scroll', 'submit', 'invalid', 'mousedown', 'mousemove', 'mouseup', 'mouseenter', 'mouseleave', 'drag', 'dragstart', 'dragenter', 'dragover', 'dragleave', 'dragend', 'drop'] 
+    const eventList = ['submit', 'click', 'dblclick', 'input', 'change', 'focus', 'blur', 'keydown', 'keyup', 'keypress', 'scroll', 'submit', 'invalid', 'mousedown', 'mousemove', 'mouseup', 'mouseenter', 'mouseleave', 'drag', 'dragstart', 'dragenter', 'dragover', 'dragleave', 'dragend', 'drop'] 
 
     // 表单绑定
     const modelMap = [
@@ -78,7 +78,7 @@
                     }
                     const isArray = Array.isArray(data[name]);
                     el.setAttribute(item.attrName, item.attrValue(name, attrvalue, isArray));
-                    el.setAttribute('fn-'+item.event, item.fn(name, isArray));
+                    el.setAttribute('v-on:'+item.event, item.fn(name, isArray));
                     el.removeAttribute(`${rule}model`);
                 }
             })
@@ -120,13 +120,13 @@
             }
         })
 
-        // 绑定事件 $click="fn"
-        const eventEls = fragment.content.querySelectorAll(eventList.map( el => `[\\${rule+el}]`).join(',') + `,[fn-input],[fn-change]`);
+        // 绑定事件 @click="fn"
+        const eventEls = fragment.content.querySelectorAll(eventList.map( el => `[\\@${el}]`).join(',') + `,[v-on\\:input],[v-on\\:change]`);
         eventEls.forEach(el => {
-            const attrs = Array.from(el.attributes).filter( attr => eventList.includes(attr.name.split(RegExp(`${rule}|\-`))[1]) )
+            const attrs = Array.from(el.attributes).filter( attr => eventList.includes(attr.name.split(RegExp(`(?:@|v-on:|${rule}-on)`))[1]) )
             attrs.forEach(attr => {
                 if (methods && Object.keys(methods).length && app) {
-                    const name = attr.name.split(RegExp(`${rule}|\-`))[1];
+                    const name = attr.name.split(RegExp(`(?:@|v-on:|${rule}-on)`))[1];
                     const events = attr.value;
                     const fn = function (event) {
                         if (events.includes('(') || events.includes('this')) {

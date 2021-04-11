@@ -77,7 +77,7 @@
                 el.remove();
             })
 
-            //$show e.g. <div $show="show"></div>   =>  <div hidden="${!show}"></div>
+            // $show e.g. <div $show="show"></div>   =>  <div hidden="${!show}"></div>
             const showEls = this.$fragment.content.querySelectorAll(`[\\${rule}show]`);
             showEls.forEach(el => {
                 const shows = el.getAttribute(`${rule}show`);
@@ -85,8 +85,8 @@
                 el.removeAttribute(`${rule}show`);
             })
 
-            //$bind:class e.g. <div :class="{cur:show}"></div>   =>  <div class="${show?'cur':''}"></div>
-            const classEls = this.$fragment.content.querySelectorAll(`[\\:class],[\\${rule}bind:class]`);
+            // $bind:class e.g. <div :class="{cur:show}"></div>   =>  <div class="${show?'cur':''}"></div>
+            const classEls = this.$fragment.content.querySelectorAll(`[\\:class],[\\${rule}bind\\:class]`);
             classEls.forEach(el => {
                 const classes = el.getAttribute(`:class`)||el.getAttribute(`${rule}bind:class`);
                 if (classes.includes('{')) {
@@ -99,9 +99,18 @@
                     el.removeAttribute(`${rule}bind:class`);
                 }
             })
+
+            const keyEls = this.$fragment.content.querySelectorAll(`[\\:key],[\\${rule}bind\\:key]`);
+            keyEls.forEach(el => {
+                const key = el.getAttribute(`:key`)||el.getAttribute(`${rule}bind:key`);
+                el.key = key;
+                el.setAttribute('v-data-key','${'+key+'}')
+                el.removeAttribute(`:key`);
+                el.removeAttribute(`${rule}bind:key`);
+            })
         }
         this.fragment.innerHTML = this.$fragment.innerHTML.interpolate(data);
-
+        
         // 表单props特殊处理，false直接移除
         const propsEls = this.fragment.content.querySelectorAll(`[${propsMap.join('],[')}]`);
         propsEls.forEach(el => {
