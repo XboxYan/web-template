@@ -392,30 +392,30 @@
     <footer>
         Copyright &copy; 2020 todolist.cn
     </footer>
-    <template is="app" rule="@">
+    <template is="app" rule="v-">
         <section class="todoapp">
-            <form class="header" @submit="addTodo">
+            <form class="header" v-submit="addTodo">
                 <h1>todos</h1>
-                <input class="new-todo" @qq="sd" autofocus autocomplete="off" placeholder="What needs to be done?"
-                    @model="newTodo" />
+                <input class="new-todo" v-qq="sd" autofocus autocomplete="off" placeholder="What needs to be done?"
+                    v-model="newTodo" />
             </form>
             <section class="main" hidden="{{!todos.length}}">
-                <input id="toggle-all" class="toggle-all" type="checkbox" @model="allDone" />
+                <input id="toggle-all" class="toggle-all" type="checkbox" v-model="allDone" />
                 <label for="toggle-all"></label>
                 <ul class="todo-list">
-                    <li @for="todo in todos"
+                    <li v-for="todo in todos"
                         class="todo {{todo.completed && 'completed'}} {{todo.edit && 'editing'}}">
                         <div class="view">
-                            <input class="toggle" type="checkbox" @model="todo.completed"/>
+                            <input class="toggle" type="checkbox" v-model="todo.completed"/>
                             <label @dblclick="editTodo(index)" @click="editTodo(index)">{{ todo.title }}</label>
                             <button class="destroy" @click="removeTodo(todo)"></button>
                         </div>
-                        <input class="edit" type="text" v-todo-focus="todo == editedTodo"
-                            @blur="doneEdit(index)" @model="todo.title"  />
+                        <input class="edit" type="text" @on="todo == editedTodo"  @focus="todo == editedTodo"
+                            @blur="doneEdit(index)" v-model="todo.title"  />
                     </li>
                 </ul>
             </section>
-            <footer class="footer" hidden="{{!todos.length}}" v-cloak>
+            <footer class="footer" v-show="todos.length">
                 <span class="todo-count">
                     <strong>{{ remaining }}</strong> {{ remaining>1?'items':'item' }} left
                 </span>
@@ -424,13 +424,13 @@
                         <a href="#/all" :class="{ selected: visibility == 'all' }">All</a>
                     </li>
                     <li>
-                        <a href="#/active" :class="{ selected: visibility == 'active' }">Active</a>
+                        <a href="#/active" :class="{ selected: visibility=='active' }">Active</a>
                     </li>
                     <li>
                         <a href="#/completed" :class="{ selected: visibility == 'completed' }">Completed</a>
                     </li>
                 </ul>
-                <button class="clear-completed" @click="removeCompleted" v-show="todos.length > remaining">
+                <button class="clear-completed" v-click="removeCompleted" v-show="todos.length > remaining">
                     Clear completed
                 </button>
             </footer>

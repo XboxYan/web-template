@@ -5,10 +5,10 @@
  */
 
 (function () {
-
+    
     // 布尔类型属性
     const propsMap = ['disabled', 'value', 'hidden', 'checked', 'selected', 'required', 'open', 'readonly', 'novalidate', 'reversed'];
-
+    
     // HTML字符反转义   &lt;  =>  < 
     function escape2Html(str) {
         var arrEntities = { 'lt': '<', 'gt': '>', 'nbsp': ' ', 'amp': '&', 'quot': '"' };
@@ -44,12 +44,11 @@
         if (!this.$fragment) {
             this.$fragment = this.cloneNode(true);
             this.fragment = document.createElement('TEMPLATE');
-
+            
             // 模板渲染之前 interpolateBefore
             this.interpolateBefore && this.interpolateBefore(this.$fragment, {data, options, rule});
-
-            // $for 循环渲染
-            // <div $for="list"></div>   =>    ${ list.map(function(item,index){ return '<div></div>' }).join('') }
+            
+            // $for 循环渲染 e.g. <div $for="list"></div>  =>   ${ list.map(function(item,index){ return '<div></div>' }).join('') }
             const repeatEls = this.$fragment.content.querySelectorAll(`[\\${rule}for]`);
             repeatEls.forEach(el => {
                 const strFor = el.getAttribute(`${rule}for`);
@@ -62,8 +61,7 @@
                 el.after('`}).join("")}');
             })
 
-            // $if 条件渲染
-            // <div $if="if"></div>   =>    ${ if ? '<div></div>' : '' }
+            // $if 条件渲染 e.g. <div $if="if"></div>   =>    ${ if ? '<div></div>' : '' }
             const ifEls = this.$fragment.content.querySelectorAll(`[\\${rule}if]`);
             ifEls.forEach(el => {
                 const ifs = el.getAttribute(`${rule}if`);
@@ -72,21 +70,39 @@
                 el.after('`:`<!--if:' + el.tagName + '-->`}');
             })
 
-            // fragment   <fragment>aa</fragment>   =>  aa
+            // fragment e.g. <fragment>aa</fragment>   =>  aa
             const fragments = this.$fragment.content.querySelectorAll('fragment,block');
             fragments.forEach(el => {
                 el.after(el.innerHTML);
                 el.remove();
             })
+
+            //$show e.g. <div $show="show"></div>   =>  <div hidden="${!show}"></div>
+            const showEls = this.$fragment.content.querySelectorAll(`[\\${rule}show]`);
+            showEls.forEach(el => {
+                const shows = el.getAttribute(`${rule}show`);
+                el.setAttribute('hidden','${!'+shows+'}')
+                el.removeAttribute(`${rule}show`);
+            })
+
+            //$bind:class e.g. <div :class="{cur:show}"></div>   =>  <div class="${show?'cur':''}"></div>
+            const classEls = this.$fragment.content.querySelectorAll(`[\\:class],[\\${rule}bind:class]`);
+            classEls.forEach(el => {
+                const classes = el.getAttribute(`:class`)||el.getAttribute(`${rule}bind:class`);
+                if (classes.includes('{')) {
+                    // object格式
+                    const classList = classes.replace(/\s/g,'').split(/[\{\}:,]/g).filter(Boolean);
+                    for (let i=0;i<classList.length;i+=2) {
+                        el.classList.add("${!!"+classList[i+1]+"?'"+classList[i]+"':''}");
+                    }
+                    el.removeAttribute(`:class`);
+                    el.removeAttribute(`${rule}bind:class`);
+                }
+            })
         }
-
-        console.log(this.$fragment.innerHTML)
-
         this.fragment.innerHTML = this.$fragment.innerHTML.interpolate(data);
 
-        // console.log(this.fragment.innerHTML)
-
-        // props
+        // 表单props特殊处理，false直接移除
         const propsEls = this.fragment.content.querySelectorAll(`[${propsMap.join('],[')}]`);
         propsEls.forEach(el => {
             propsMap.forEach(props => {

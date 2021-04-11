@@ -299,11 +299,11 @@ const data = {
 
 > 注意，指令的属性值不需要包裹 `${ }`
 
-这里没有实现另外一个显示隐藏的指令 `v-show` ，可以用属性 `hidden` 来代替
+ `v-show` 内部通过属性 `hidden` 来实现样式上的隐藏
 
 ```html
-<h1 hidden="${!show}">Template is awesome!</h1>
-<h1 hidden="${show}">Oh no 😢</h1>
+<h1 v-show="show">Template is awesome!</h1>
+<h1 v-show="!show">Oh no 😢</h1>
 ```
 
 ```js
@@ -316,7 +316,7 @@ const data = {
 
 ```html
 <h1>Template is awesome!</h1>
-<h1 hidden="true">Oh no 😢</h1> <!--样式上被隐藏-->
+<h1 hidden>Oh no 😢</h1> <!--样式上被隐藏-->
 ```
 
 > 注意，这里是普通的属性，所以需要包裹 `${ }`

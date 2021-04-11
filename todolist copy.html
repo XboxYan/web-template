@@ -211,7 +211,7 @@
             </h2>
             <ol class="demo-box">
                 <li @for="todoList" key="${item.key}" @if="item.done === false">
-                    <input type="checkbox" @on="change:changeTodo(index,true)" checked="${item.done}">
+                    <input type="checkbox" @on="{change:changeTodo(index,true),aaa:elec}" checked="${item.done}">
                     <p>${item.todo}</p>
                     <a @on="click:deleteTodo(index,true)">-</a>
                 </li>

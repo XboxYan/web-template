@@ -42,7 +42,7 @@
             background-color:cornflowerblue;
             transition: .3s;
         }
-        .ball[data-active=true]{
+        .ball.active{
             transform: translateX(200px);
         }
 
@@ -62,29 +62,29 @@
 <body>
     <h1>web-template.js</h1>
     <div class="left">
-        <pre>&lt;template id="template" rule="@"&gt;
+        <pre>&lt;template id="template" rule="v-"&gt;
     &lt;h2 class="${title}"&gt;<red>${title}</red>&lt;/h2&gt;
-    &lt;h3 <red>@if="showh3"</red>&gt;h3:${title}&lt;/h3&gt;
-    &lt;h4 @if="showh4"&gt;h4:${title}&lt;/h4&gt;
+    &lt;h3 <red>v-if="showh3"</red>&gt;h3:${title}&lt;/h3&gt;
+    &lt;h4 v-if="showh4"&gt;h4:${title}&lt;/h4&gt;
     &lt;ul class="list"&gt;
-        &lt;li class="item" @for="list" <red>key="${item.id}"</red>&gt;
+        &lt;li class="item" v-for="list" <red>key="${item.id}"</red>&gt;
             &lt;input type="checkbox" &gt;
             &lt;strong&gt;[key = ${item.id}]&lt;/strong&gt;
             ${ item.message }&lt;span&gt;${parseInt(item.num)}&lt;/span&gt;
-            &lt;div&gt;&lt;i @for="el in item.tag"&gt;${index+1}.${el} &lt;/i&gt;&lt;/div&gt;
+            &lt;div&gt;&lt;i v-for="el in item.tag"&gt;${index+1}.${el} &lt;/i&gt;&lt;/div&gt;
             &lt;input&gt;
             &lt;button disabled="${item.disabled}"&gt;查看&lt;/button&gt;
         &lt;/li&gt;
     &lt;/ul&gt;
     &lt;ul class="demo"&gt;
-        &lt;li <red>@for="(value,name,index) of object"</red>&gt;
+        &lt;li <red>v-for="(value,name,index) of object"</red>&gt;
             ${ index  } - ${ name  } : ${ value  }
         &lt;/li&gt;
     &lt;/ul&gt;
-    &lt;div @for="[1,2,3,4,5].reverse()"&gt;${item}&lt;/div&gt;
+    &lt;div v-for="[1,2,3,4,5].reverse()"&gt;${item}&lt;/div&gt;
     乘法表
-    &lt;div @for="i in [1,2,3,4,5,6,7,8,9]"&gt;
-        &lt;span @for="j in [1,2,3,4,5,6,7,8,9]" @if="i&gt;=j"&gt; ${i*j} &lt;/span&gt;
+    &lt;div v-for="i in [1,2,3,4,5,6,7,8,9]"&gt;
+        &lt;span v-for="j in [1,2,3,4,5,6,7,8,9]" v-if="i&gt;=j"&gt; ${i*j} &lt;/span&gt;
     &lt;/div&gt;
 &lt;/template&gt;
 </pre>
@@ -139,32 +139,33 @@
         <div is="template"></div>
     </div>
 
-    <template id="template" rule="@">
+    <template id="template" rule="v-">
 
             <h2 class="${title}" data-title="${title}">${title}</h2>
-            <h3 @if="showh3">h3:${title}</h3>
-            <h3 hidden="${showh3}">h3:${title}</h3>
-            <h4 @if="showh4">h4:${title}</h4>
+            <h3 v-if="showh3">h3:${title}</h3>
+            <h3 v-show="showh3">h3:${title}</h3>
+            <div class="ball" :class="{active:showh3,m:showh4}"></div>
+            <h4 v-if="showh4">h4:${title}</h4>
             <h4 hidden="${showh4}">hidden:h4:${title}</h4>
             <ul class="list">
-                <li class="item" @for="(item,index) in list" key="${item.id}" @model="list[index].disabled">
-                    <input type="checkbox">
+                <li class="item" v-for="(item,index) in list" key="${item.id}">
+                    <input type="checkbox" v-model="list[index].disabled">
                     <strong>[key = ${item.id}]</strong>
                     ${ item.message }<span>${parseInt(item.num)}</span>
-                    <div><i @for="(el, m) in list[index].tag">${m+list[index].tag[m]}</i></div>
+                    <div><i v-for="(el, m) in list[index].tag">${m+list[index].tag[m]}</i></div>
                     <input>
                     <button disabled="${item.disabled}">查看</button>
                 </li>
             </ul>
             <ul class="demo">
-                <li @for="(value,name,index) of object">
+                <li v-for="(value,name,index) of object">
                     ${ index } - ${ name } : ${ value }
                 </li>
             </ul>
-            <div @for="[1,2,3,4,5].reverse()">{{item}}</div>
+            <div v-for="[1,2,3,4,5].reverse()">{{item}}</div>
             乘法表
-            <div @for="i in [1,2,3,4,5,6,7,8,9]">
-                <span @for="j in [1,2,3,4,5,6,7,8,9]" @if="i>=j"> ${i*j} </span>
+            <div v-for="i in [1,2,3,4,5,6,7,8,9]">
+                <span v-for="j in [1,2,3,4,5,6,7,8,9]" v-if="i>=j"> ${i*j} </span>
             </div>
 
     </template>
